@@ -18,3 +18,4 @@ public interface BreachRuleRepository extends JpaRepository<BreachRule, Long> {
     @Query("UPDATE BreachRule b SET b.isDefaultRule = false WHERE b.isDefaultRule = true")
     void unsetOtherDefaultRules();
 }
+
