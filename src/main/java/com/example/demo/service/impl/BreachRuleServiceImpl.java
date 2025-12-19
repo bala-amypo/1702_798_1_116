@@ -46,14 +46,10 @@ public class BreachRuleServiceImpl implements BreachRuleService {
         }
     }
 
-    // REQUIRED by test cases
     @Override
     public BreachRule getActiveDefaultOrFirst() {
-        BreachRule rule =
-                breachRuleRepository.findFirstByActiveTrueOrderByIsDefaultRuleDesc();
-        if (rule == null) {
-            throw new RuntimeException("No active breach rule");
-        }
-        return rule;
+        return breachRuleRepository
+                .findFirstByActiveTrueOrderByIsDefaultRuleDesc()
+                .orElseThrow(() -> new RuntimeException("No active breach rule found"));
     }
 }

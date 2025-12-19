@@ -1,48 +1,33 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
-import com.example.demo.repository.*;
-import com.example.demo.service.*;
+import com.example.demo.entity.BreachReport;
+import com.example.demo.repository.BreachReportRepository;
+import com.example.demo.service.BreachReportService;
+import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 
+@Service
 public class BreachReportServiceImpl implements BreachReportService {
 
     private final BreachReportRepository breachReportRepository;
-    private final PenaltyCalculationService penaltyCalculationService;
 
-    public BreachReportServiceImpl(
-            BreachReportRepository breachReportRepository,
-            PenaltyCalculationService penaltyCalculationService) {
-
+    public BreachReportServiceImpl(BreachReportRepository breachReportRepository) {
         this.breachReportRepository = breachReportRepository;
-        this.penaltyCalculationService = penaltyCalculationService;
     }
 
     @Override
-    public BreachReport generateReport(Long contractId) {
-
-        PenaltyCalculation pc =
-                penaltyCalculationService.getCalculationsForContract(contractId)
-                        .stream().findFirst().orElse(null);
-
-        if (pc == null) return null;
-
-        BreachReport report = BreachReport.builder()
-                .contract(pc.getContract())
-                .daysDelayed(pc.getDaysDelayed())
-                .penaltyAmount(pc.getCalculatedPenalty())
-                .reportGeneratedAt(Timestamp.from(Instant.now()))
-                .remarks("Auto generated report")
-                .build();
-
+    public BreachReport generateReport(BreachReport report) {
         return breachReportRepository.save(report);
     }
 
     @Override
-    public List<BreachReport> getReportsForContract(Long contractId) {
+    public BreachReport getReportById(Long id) {
+        return breachReportRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<BreachReport> getReportsByContract(Long contractId) {
         return breachReportRepository.findByContractId(contractId);
     }
 }
