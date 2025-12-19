@@ -1,3 +1,17 @@
+package com.example.demo.service.impl;
+
+import com.example.demo.entity.*;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.*;
+import com.example.demo.service.BreachRuleService;
+import com.example.demo.service.PenaltyCalculationService;
+
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.temporal.ChronoUnit;
+
 @Service
 public class PenaltyCalculationServiceImpl implements PenaltyCalculationService {
 
@@ -7,10 +21,10 @@ public class PenaltyCalculationServiceImpl implements PenaltyCalculationService 
     private final PenaltyCalculationRepository penaltyRepo;
 
     public PenaltyCalculationServiceImpl(
-        ContractRepository contractRepo,
-        DeliveryRecordRepository deliveryRepo,
-        BreachRuleService breachRuleService,
-        PenaltyCalculationRepository penaltyRepo) {
+            ContractRepository contractRepo,
+            DeliveryRecordRepository deliveryRepo,
+            BreachRuleService breachRuleService,
+            PenaltyCalculationRepository penaltyRepo) {
 
         this.contractRepo = contractRepo;
         this.deliveryRepo = deliveryRepo;
@@ -22,27 +36,28 @@ public class PenaltyCalculationServiceImpl implements PenaltyCalculationService 
     public PenaltyCalculation calculatePenalty(Long contractId) {
 
         Contract contract = contractRepo.findById(contractId)
-          .orElseThrow(() -> new ResourceNotFoundException("Contract not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Contract not found"));
 
         DeliveryRecord delivery = deliveryRepo
-          .findFirstByContractIdOrderByDeliveryDateDesc(contractId)
-          .orElseThrow(() ->
-            new ResourceNotFoundException("No delivery record"));
+                .findFirstByContractIdOrderByDeliveryDateDesc(contractId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("No delivery record"));
 
         BreachRule rule = breachRuleService.getActiveDefaultOrFirst();
 
         long daysDelayed = ChronoUnit.DAYS.between(
-            contract.getAgreedDeliveryDate().toInstant(),
-            delivery.getDeliveryDate().toInstant());
+                contract.getAgreedDeliveryDate().toInstant(),
+                delivery.getDeliveryDate().toInstant());
 
         if (daysDelayed < 0) daysDelayed = 0;
 
         BigDecimal perDay = rule.getPenaltyPerDay()
-            .multiply(BigDecimal.valueOf(daysDelayed));
+                .multiply(BigDecimal.valueOf(daysDelayed));
 
         BigDecimal maxAllowed = contract.getBaseContractValue()
-            .multiply(BigDecimal.valueOf(rule.getMaxPenaltyPercentage()))
-            .divide(BigDecimal.valueOf(100));
+                .multiply(BigDecimal.valueOf(rule.getMaxPenaltyPercentage()))
+                .divide(BigDecimal.valueOf(100));
 
         BigDecimal finalPenalty = perDay.min(maxAllowed);
 
