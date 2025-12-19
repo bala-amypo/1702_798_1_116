@@ -4,6 +4,7 @@ import com.example.demo.entity.BreachRule;
 import com.example.demo.entity.Contract;
 import com.example.demo.entity.DeliveryRecord;
 import com.example.demo.entity.PenaltyCalculation;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.ContractRepository;
 import com.example.demo.repository.DeliveryRecordRepository;
@@ -14,7 +15,6 @@ import com.example.demo.service.PenaltyCalculationService;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class PenaltyCalculationServiceImpl implements PenaltyCalculationService 
     private final BreachRuleService breachRuleService;
     private final PenaltyCalculationRepository penaltyCalculationRepository;
 
-    // ✅ Constructor Injection (MANDATORY for tests)
+    // ✅ Constructor Injection (MANDATORY FOR TESTS)
     public PenaltyCalculationServiceImpl(
             ContractRepository contractRepository,
             DeliveryRecordRepository deliveryRecordRepository,
@@ -46,32 +46,41 @@ public class PenaltyCalculationServiceImpl implements PenaltyCalculationService 
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Contract not found"));
 
-        // 2️⃣ Fetch Latest Delivery Record (TEST REQUIRED METHOD)
+        // 2️⃣ Fetch latest DeliveryRecord (TEST REQUIRED METHOD)
         DeliveryRecord latestDelivery =
                 deliveryRecordRepository
                         .findFirstByContractIdOrderByDeliveryDateDesc(contractId)
                         .orElseThrow(() ->
-                                new ResourceNotFoundException("No delivery record"));
+                                new BadRequestException("No delivery record"));
 
-        // 3️⃣ Fetch Active Breach Rule (TEST REQUIRED METHOD)
+        // 3️⃣ Fetch active/default BreachRule
         BreachRule rule = breachRuleService.getActiveDefaultOrFirst();
+        if (rule == null) {
+            throw new BadRequestException("No active breach rule");
+        }
 
         // 4️⃣ Calculate delay days
-        LocalDate agreedDate = contract.getAgreedDeliveryDate();
-        LocalDate actualDate = latestDelivery.getDeliveryDate();
+        long daysDelayed = ChronoUnit.DAYS.between(
+                contract.getAgreedDeliveryDate(),
+                latestDelivery.getDeliveryDate()
+        );
 
-        long daysDelayed = Math.max(0,
-                ChronoUnit.DAYS.between(agreedDate, actualDate));
+        if (daysDelayed < 0) {
+            daysDelayed = 0;
+        }
 
         // 5️⃣ Calculate penalty
         BigDecimal perDayPenalty = rule.getPenaltyPerDay();
-        BigDecimal maxAllowedPenalty =
-                contract.getBaseContractValue()
-                        .multiply(BigDecimal.valueOf(rule.getMaxPenaltyPercentage()))
-                        .divide(BigDecimal.valueOf(100));
 
         BigDecimal calculatedPenalty =
                 perDayPenalty.multiply(BigDecimal.valueOf(daysDelayed));
+
+        BigDecimal maxAllowedPenalty =
+                contract.getBaseContractValue()
+                        .multiply(
+                                BigDecimal.valueOf(rule.getMaxPenaltyPercentage())
+                                        .divide(BigDecimal.valueOf(100))
+                        );
 
         if (calculatedPenalty.compareTo(maxAllowedPenalty) > 0) {
             calculatedPenalty = maxAllowedPenalty;
