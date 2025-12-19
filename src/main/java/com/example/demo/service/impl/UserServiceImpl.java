@@ -5,7 +5,7 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
-        user.setCreatedAt(Instant.now());
+        user.setCreatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }
 

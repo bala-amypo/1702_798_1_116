@@ -19,6 +19,7 @@ public class AuthController {
                          @RequestParam String password) {
 
         // ✅ FIX IS HERE
-        return userService.registerUser(email, password);
+        return userService.register(email, password);
+
     }
 }
