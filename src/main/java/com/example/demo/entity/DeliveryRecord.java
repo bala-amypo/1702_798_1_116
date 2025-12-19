@@ -1,13 +1,14 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
 public class DeliveryRecord {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -17,8 +18,9 @@ public class DeliveryRecord {
     private Date deliveryDate;
 
     private String notes;
+    private Timestamp createdAt;
 
-    private Date createdAt;
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
@@ -52,11 +54,11 @@ public class DeliveryRecord {
         this.notes = notes;
     }
 
-    public Date getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 }

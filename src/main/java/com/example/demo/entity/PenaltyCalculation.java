@@ -1,27 +1,28 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Entity
 public class PenaltyCalculation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     private Contract contract;
 
     private Integer daysDelayed;
-
     private BigDecimal calculatedPenalty;
 
     @ManyToOne
     private BreachRule appliedRule;
 
-    private Date calculatedAt;
+    private Timestamp calculatedAt;
+
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
@@ -63,11 +64,11 @@ public class PenaltyCalculation {
         this.appliedRule = appliedRule;
     }
 
-    public Date getCalculatedAt() {
+    public Timestamp getCalculatedAt() {
         return calculatedAt;
     }
 
-    public void setCalculatedAt(Date calculatedAt) {
+    public void setCalculatedAt(Timestamp calculatedAt) {
         this.calculatedAt = calculatedAt;
     }
 }

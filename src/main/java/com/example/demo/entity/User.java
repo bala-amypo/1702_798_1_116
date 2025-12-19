@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -21,6 +21,8 @@ public class User {
     private Set<String> roles;
 
     private LocalDateTime createdAt;
+
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;

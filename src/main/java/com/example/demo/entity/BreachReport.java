@@ -1,26 +1,25 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Entity
 public class BreachReport {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     private Contract contract;
 
-    private Date reportGeneratedAt;
-
+    private Timestamp reportGeneratedAt;
     private Integer daysDelayed;
-
     private BigDecimal penaltyAmount;
-
     private String remarks;
+
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
@@ -38,11 +37,11 @@ public class BreachReport {
         this.contract = contract;
     }
 
-    public Date getReportGeneratedAt() {
+    public Timestamp getReportGeneratedAt() {
         return reportGeneratedAt;
     }
 
-    public void setReportGeneratedAt(Date reportGeneratedAt) {
+    public void setReportGeneratedAt(Timestamp reportGeneratedAt) {
         this.reportGeneratedAt = reportGeneratedAt;
     }
 

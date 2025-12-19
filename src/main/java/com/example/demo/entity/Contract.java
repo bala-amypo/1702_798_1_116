@@ -1,14 +1,19 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
+@Table(
+    name = "contracts",
+    uniqueConstraints = @UniqueConstraint(columnNames = "contractNumber")
+)
 public class Contract {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -22,10 +27,12 @@ public class Contract {
 
     private BigDecimal baseContractValue;
 
-    private String status;
+    private String status; // ACTIVE, COMPLETED, BREACHED
 
-    private Date createdAt;
-    private Date updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
@@ -83,19 +90,19 @@ public class Contract {
         this.status = status;
     }
 
-    public Date getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

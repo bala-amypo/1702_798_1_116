@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class BreachRule {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -18,6 +18,8 @@ public class BreachRule {
 
     private Boolean active;
     private Boolean isDefaultRule;
+
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
