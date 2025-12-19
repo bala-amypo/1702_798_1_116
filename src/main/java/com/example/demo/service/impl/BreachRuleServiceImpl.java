@@ -8,27 +8,18 @@ import java.util.List;
 
 public class BreachRuleServiceImpl implements BreachRuleService {
 
-    private final BreachRuleRepository breachRuleRepository;
+    private final BreachRuleRepository repository;
 
-    public BreachRuleServiceImpl(BreachRuleRepository breachRuleRepository) {
-        this.breachRuleRepository = breachRuleRepository;
+    public BreachRuleServiceImpl(BreachRuleRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public BreachRule createRule(BreachRule rule) {
-        return breachRuleRepository.save(rule);
-    }
-
-    @Override
-    public void deactivateRule(Long ruleId) {
-        breachRuleRepository.findById(ruleId).ifPresent(rule -> {
-            rule.setActive(false);
-            breachRuleRepository.save(rule);
-        });
-    }
-
-    @Override
-    public List<BreachRule> getAllRules() {
-        return breachRuleRepository.findAll();
+    public BreachRule getActiveDefaultOrFirst() {
+        List<BreachRule> rules = repository.findAll();
+        return rules.stream()
+                .filter(BreachRule::isActive)
+                .findFirst()
+                .orElse(rules.isEmpty() ? null : rules.get(0));
     }
 }

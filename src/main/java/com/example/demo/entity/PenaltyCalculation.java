@@ -14,7 +14,8 @@ public class PenaltyCalculation {
     @ManyToOne
     private Contract contract;
 
-    private Integer daysDelayed;
+    private int daysDelayed;
+
     private BigDecimal calculatedPenalty;
 
     @ManyToOne
@@ -22,41 +23,53 @@ public class PenaltyCalculation {
 
     private Timestamp calculatedAt;
 
-    public PenaltyCalculation() {}
+    // ===== Getters & Setters =====
 
-    /* ===== GETTERS & SETTERS ===== */
+    public Long getId() {
+        return id;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Contract getContract() { return contract; }
-    public void setContract(Contract contract) { this.contract = contract; }
+    public Contract getContract() {
+        return contract;
+    }
 
-    public Integer getDaysDelayed() { return daysDelayed; }
-    public void setDaysDelayed(Integer daysDelayed) { this.daysDelayed = daysDelayed; }
+    public void setContract(Contract contract) {
+        this.contract = contract;
+    }
 
-    public BigDecimal getCalculatedPenalty() { return calculatedPenalty; }
-    public void setCalculatedPenalty(BigDecimal calculatedPenalty) { this.calculatedPenalty = calculatedPenalty; }
+    public int getDaysDelayed() {
+        return daysDelayed;
+    }
 
-    public BreachRule getAppliedRule() { return appliedRule; }
-    public void setAppliedRule(BreachRule appliedRule) { this.appliedRule = appliedRule; }
+    public void setDaysDelayed(int daysDelayed) {
+        this.daysDelayed = daysDelayed;
+    }
 
-    public Timestamp getCalculatedAt() { return calculatedAt; }
-    public void setCalculatedAt(Timestamp calculatedAt) { this.calculatedAt = calculatedAt; }
+    public BigDecimal getCalculatedPenalty() {
+        return calculatedPenalty;
+    }
 
-    /* ===== BUILDER ===== */
+    public void setCalculatedPenalty(BigDecimal calculatedPenalty) {
+        this.calculatedPenalty = calculatedPenalty;
+    }
 
-    public static Builder builder() { return new Builder(); }
+    public BreachRule getAppliedRule() {
+        return appliedRule;
+    }
 
-    public static class Builder {
-        private final PenaltyCalculation p = new PenaltyCalculation();
+    public void setAppliedRule(BreachRule appliedRule) {
+        this.appliedRule = appliedRule;
+    }
 
-        public Builder contract(Contract v){ p.setContract(v); return this; }
-        public Builder daysDelayed(Integer v){ p.setDaysDelayed(v); return this; }
-        public Builder calculatedPenalty(BigDecimal v){ p.setCalculatedPenalty(v); return this; }
-        public Builder appliedRule(BreachRule v){ p.setAppliedRule(v); return this; }
-        public Builder calculatedAt(Timestamp v){ p.setCalculatedAt(v); return this; }
+    public Timestamp getCalculatedAt() {
+        return calculatedAt;
+    }
 
-        public PenaltyCalculation build(){ return p; }
+    public void setCalculatedAt(Timestamp calculatedAt) {
+        this.calculatedAt = calculatedAt;
     }
 }
