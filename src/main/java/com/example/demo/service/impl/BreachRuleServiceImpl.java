@@ -20,4 +20,13 @@ public class BreachRuleServiceImpl implements BreachRuleService {
                 .findFirstByActiveTrueOrderByIdAsc()
                 .orElseThrow(() -> new RuntimeException("No active breach rule found"));
     }
+
+    @Override
+    public void deactivateRule(Long id) {
+        BreachRule rule = breachRuleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Breach rule not found"));
+
+        rule.setActive(false);
+        breachRuleRepository.save(rule);
+    }
 }
