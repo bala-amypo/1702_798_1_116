@@ -4,54 +4,55 @@ public class PenaltyCalculationServiceImpl implements PenaltyCalculationService 
     private final ContractRepository contractRepo;
     private final DeliveryRecordRepository deliveryRepo;
     private final BreachRuleService breachRuleService;
-    private final PenaltyCalculationRepository calcRepo;
+    private final PenaltyCalculationRepository penaltyRepo;
 
     public PenaltyCalculationServiceImpl(
-            ContractRepository c,
-            DeliveryRecordRepository d,
-            BreachRuleService b,
-            PenaltyCalculationRepository p) {
-        this.contractRepo = c;
-        this.deliveryRepo = d;
-        this.breachRuleService = b;
-        this.calcRepo = p;
+        ContractRepository contractRepo,
+        DeliveryRecordRepository deliveryRepo,
+        BreachRuleService breachRuleService,
+        PenaltyCalculationRepository penaltyRepo) {
+
+        this.contractRepo = contractRepo;
+        this.deliveryRepo = deliveryRepo;
+        this.breachRuleService = breachRuleService;
+        this.penaltyRepo = penaltyRepo;
     }
 
     @Override
     public PenaltyCalculation calculatePenalty(Long contractId) {
 
         Contract contract = contractRepo.findById(contractId)
-                .orElseThrow(() -> new ResourceNotFoundException("Contract not found"));
+          .orElseThrow(() -> new ResourceNotFoundException("Contract not found"));
 
-        DeliveryRecord latest = deliveryRepo
-                .findFirstByContractIdOrderByDeliveryDateDesc(contractId);
-
-        if (latest == null) {
-            throw new BadRequestException("No delivery record");
-        }
+        DeliveryRecord delivery = deliveryRepo
+          .findFirstByContractIdOrderByDeliveryDateDesc(contractId)
+          .orElseThrow(() ->
+            new ResourceNotFoundException("No delivery record"));
 
         BreachRule rule = breachRuleService.getActiveDefaultOrFirst();
 
-        long delay = Math.max(0,
-                (latest.getDeliveryDate().getTime()
-                        - contract.getAgreedDeliveryDate().getTime())
-                        / (1000 * 60 * 60 * 24));
+        long daysDelayed = ChronoUnit.DAYS.between(
+            contract.getAgreedDeliveryDate().toInstant(),
+            delivery.getDeliveryDate().toInstant());
 
-        BigDecimal penalty = rule.getPenaltyPerDay()
-                .multiply(BigDecimal.valueOf(delay));
+        if (daysDelayed < 0) daysDelayed = 0;
 
-        BigDecimal maxCap = contract.getBaseContractValue()
-                .multiply(BigDecimal.valueOf(rule.getMaxPenaltyPercentage() / 100));
+        BigDecimal perDay = rule.getPenaltyPerDay()
+            .multiply(BigDecimal.valueOf(daysDelayed));
 
-        BigDecimal finalPenalty = penalty.min(maxCap);
+        BigDecimal maxAllowed = contract.getBaseContractValue()
+            .multiply(BigDecimal.valueOf(rule.getMaxPenaltyPercentage()))
+            .divide(BigDecimal.valueOf(100));
+
+        BigDecimal finalPenalty = perDay.min(maxAllowed);
 
         PenaltyCalculation calc = new PenaltyCalculation();
         calc.setContract(contract);
-        calc.setDaysDelayed((int) delay);
+        calc.setDaysDelayed((int) daysDelayed);
         calc.setCalculatedPenalty(finalPenalty);
         calc.setAppliedRule(rule);
-        calc.setCalculatedAt(new Date());
+        calc.setCalculatedAt(new Timestamp(System.currentTimeMillis()));
 
-        return calcRepo.save(calc);
+        return penaltyRepo.save(calc);
     }
 }

@@ -9,10 +9,8 @@ public class BreachRuleServiceImpl implements BreachRuleService {
 
     @Override
     public BreachRule getActiveDefaultOrFirst() {
-        BreachRule rule = repo.findFirstByActiveTrueOrderByIsDefaultRuleDesc();
-        if (rule == null) {
-            throw new ResourceNotFoundException("No active breach rule");
-        }
-        return rule;
+        return repo.findFirstByActiveTrueOrderByIsDefaultRuleDesc()
+          .orElseThrow(() ->
+            new ResourceNotFoundException("No active breach rule"));
     }
 }
