@@ -5,8 +5,6 @@ import com.example.demo.repository.BreachRuleRepository;
 import com.example.demo.service.BreachRuleService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class BreachRuleServiceImpl implements BreachRuleService {
 
@@ -17,39 +15,9 @@ public class BreachRuleServiceImpl implements BreachRuleService {
     }
 
     @Override
-    public BreachRule createRule(BreachRule rule) {
-        return breachRuleRepository.save(rule);
-    }
-
-    @Override
-    public BreachRule updateRule(Long id, BreachRule rule) {
-        rule.setId(id);
-        return breachRuleRepository.save(rule);
-    }
-
-    @Override
-    public List<BreachRule> getAllRules() {
-        return breachRuleRepository.findAll();
-    }
-
-    @Override
-    public BreachRule getRuleById(Long id) {
-        return breachRuleRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public void deactivateRule(Long id) {
-        BreachRule rule = breachRuleRepository.findById(id).orElse(null);
-        if (rule != null) {
-            rule.setActive(false);
-            breachRuleRepository.save(rule);
-        }
-    }
-
-    @Override
     public BreachRule getActiveDefaultOrFirst() {
         return breachRuleRepository
-                .findFirstByActiveTrueOrderByIsDefaultRuleDesc()
+                .findFirstByActiveTrueOrderByIdAsc()
                 .orElseThrow(() -> new RuntimeException("No active breach rule found"));
     }
 }
