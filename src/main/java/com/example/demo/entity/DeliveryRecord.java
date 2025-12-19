@@ -1,7 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -18,47 +17,37 @@ public class DeliveryRecord {
     private Date deliveryDate;
 
     private String notes;
-    private Timestamp createdAt;
 
-    // ===== GETTERS & SETTERS =====
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 
-    public Long getId() {
-        return id;
-    }
+    public DeliveryRecord() {}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Contract getContract() {
-        return contract;
-    }
+    public Contract getContract() { return contract; }
+    public void setContract(Contract contract) { this.contract = contract; }
 
-    public void setContract(Contract contract) {
-        this.contract = contract;
-    }
+    public Date getDeliveryDate() { return deliveryDate; }
+    public void setDeliveryDate(Date deliveryDate) { this.deliveryDate = deliveryDate; }
 
-    public Date getDeliveryDate() {
-        return deliveryDate;
-    }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
-    public void setDeliveryDate(Date deliveryDate) {
-        this.deliveryDate = deliveryDate;
-    }
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
-    public String getNotes() {
-        return notes;
-    }
+    public static Builder builder() { return new Builder(); }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+    public static class Builder {
+        private final DeliveryRecord d = new DeliveryRecord();
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
+        public Builder contract(Contract v){ d.setContract(v); return this; }
+        public Builder deliveryDate(Date v){ d.setDeliveryDate(v); return this; }
+        public Builder notes(String v){ d.setNotes(v); return this; }
+        public Builder createdAt(Date v){ d.setCreatedAt(v); return this; }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+        public DeliveryRecord build(){ return d; }
     }
 }

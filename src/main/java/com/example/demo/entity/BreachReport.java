@@ -19,53 +19,41 @@ public class BreachReport {
     private BigDecimal penaltyAmount;
     private String remarks;
 
-    // ===== GETTERS & SETTERS =====
+    public BreachReport() {}
 
-    public Long getId() {
-        return id;
-    }
+    /* ===== GETTERS & SETTERS ===== */
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Contract getContract() {
-        return contract;
-    }
+    public Contract getContract() { return contract; }
+    public void setContract(Contract contract) { this.contract = contract; }
 
-    public void setContract(Contract contract) {
-        this.contract = contract;
-    }
+    public Timestamp getReportGeneratedAt() { return reportGeneratedAt; }
+    public void setReportGeneratedAt(Timestamp reportGeneratedAt) { this.reportGeneratedAt = reportGeneratedAt; }
 
-    public Timestamp getReportGeneratedAt() {
-        return reportGeneratedAt;
-    }
+    public Integer getDaysDelayed() { return daysDelayed; }
+    public void setDaysDelayed(Integer daysDelayed) { this.daysDelayed = daysDelayed; }
 
-    public void setReportGeneratedAt(Timestamp reportGeneratedAt) {
-        this.reportGeneratedAt = reportGeneratedAt;
-    }
+    public BigDecimal getPenaltyAmount() { return penaltyAmount; }
+    public void setPenaltyAmount(BigDecimal penaltyAmount) { this.penaltyAmount = penaltyAmount; }
 
-    public Integer getDaysDelayed() {
-        return daysDelayed;
-    }
+    public String getRemarks() { return remarks; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 
-    public void setDaysDelayed(Integer daysDelayed) {
-        this.daysDelayed = daysDelayed;
-    }
+    /* ===== BUILDER ===== */
 
-    public BigDecimal getPenaltyAmount() {
-        return penaltyAmount;
-    }
+    public static Builder builder() { return new Builder(); }
 
-    public void setPenaltyAmount(BigDecimal penaltyAmount) {
-        this.penaltyAmount = penaltyAmount;
-    }
+    public static class Builder {
+        private final BreachReport b = new BreachReport();
 
-    public String getRemarks() {
-        return remarks;
-    }
+        public Builder contract(Contract v){ b.setContract(v); return this; }
+        public Builder reportGeneratedAt(Timestamp v){ b.setReportGeneratedAt(v); return this; }
+        public Builder daysDelayed(Integer v){ b.setDaysDelayed(v); return this; }
+        public Builder penaltyAmount(BigDecimal v){ b.setPenaltyAmount(v); return this; }
+        public Builder remarks(String v){ b.setRemarks(v); return this; }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
+        public BreachReport build(){ return b; }
     }
 }

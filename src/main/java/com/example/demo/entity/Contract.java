@@ -6,10 +6,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
-@Table(
-    name = "contracts",
-    uniqueConstraints = @UniqueConstraint(columnNames = "contractNumber")
-)
 public class Contract {
 
     @Id
@@ -18,7 +14,6 @@ public class Contract {
 
     @Column(unique = true)
     private String contractNumber;
-
     private String title;
     private String counterpartyName;
 
@@ -26,83 +21,55 @@ public class Contract {
     private Date agreedDeliveryDate;
 
     private BigDecimal baseContractValue;
-
-    private String status; // ACTIVE, COMPLETED, BREACHED
-
+    private String status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    // ===== GETTERS & SETTERS =====
+    public Contract() {}
 
-    public Long getId() {
-        return id;
-    }
+    /* ===== GETTERS & SETTERS ===== */
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getContractNumber() { return contractNumber; }
+    public void setContractNumber(String contractNumber) { this.contractNumber = contractNumber; }
 
-    public String getContractNumber() {
-        return contractNumber;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
-    }
+    public String getCounterpartyName() { return counterpartyName; }
+    public void setCounterpartyName(String counterpartyName) { this.counterpartyName = counterpartyName; }
 
-    public String getTitle() {
-        return title;
-    }
+    public Date getAgreedDeliveryDate() { return agreedDeliveryDate; }
+    public void setAgreedDeliveryDate(Date agreedDeliveryDate) { this.agreedDeliveryDate = agreedDeliveryDate; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public BigDecimal getBaseContractValue() { return baseContractValue; }
+    public void setBaseContractValue(BigDecimal baseContractValue) { this.baseContractValue = baseContractValue; }
 
-    public String getCounterpartyName() {
-        return counterpartyName;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setCounterpartyName(String counterpartyName) {
-        this.counterpartyName = counterpartyName;
-    }
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 
-    public Date getAgreedDeliveryDate() {
-        return agreedDeliveryDate;
-    }
+    public Timestamp getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
 
-    public void setAgreedDeliveryDate(Date agreedDeliveryDate) {
-        this.agreedDeliveryDate = agreedDeliveryDate;
-    }
+    /* ===== BUILDER ===== */
+    public static Builder builder() { return new Builder(); }
 
-    public BigDecimal getBaseContractValue() {
-        return baseContractValue;
-    }
+    public static class Builder {
+        private final Contract c = new Contract();
 
-    public void setBaseContractValue(BigDecimal baseContractValue) {
-        this.baseContractValue = baseContractValue;
-    }
+        public Builder contractNumber(String v){ c.setContractNumber(v); return this; }
+        public Builder title(String v){ c.setTitle(v); return this; }
+        public Builder counterpartyName(String v){ c.setCounterpartyName(v); return this; }
+        public Builder agreedDeliveryDate(Date v){ c.setAgreedDeliveryDate(v); return this; }
+        public Builder baseContractValue(BigDecimal v){ c.setBaseContractValue(v); return this; }
+        public Builder status(String v){ c.setStatus(v); return this; }
+        public Builder createdAt(Timestamp v){ c.setCreatedAt(v); return this; }
+        public Builder updatedAt(Timestamp v){ c.setUpdatedAt(v); return this; }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+        public Contract build(){ return c; }
     }
 }
