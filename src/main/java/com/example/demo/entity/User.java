@@ -12,47 +12,61 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> roles;
 
     private LocalDateTime createdAt;
 
-    public User() {}
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "roles")
+    private Set<String> roles;
 
-    /* ===== GETTERS & SETTERS ===== */
+    // ----------- Getters & Setters ------------
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getEmail() {
+        return email;
+    }
 
-    public Set<String> getRoles() { return roles; }
-    public void setRoles(Set<String> roles) { this.roles = roles; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getPassword() {
+        return password;
+    }
 
-    /* ===== BUILDER ===== */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public static Builder builder() { return new Builder(); }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-    public static class Builder {
-        private final User u = new User();
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-        public Builder email(String v){ u.setEmail(v); return this; }
-        public Builder password(String v){ u.setPassword(v); return this; }
-        public Builder roles(Set<String> v){ u.setRoles(v); return this; }
-        public Builder createdAt(LocalDateTime v){ u.setCreatedAt(v); return this; }
+    public Set<String> getRoles() {
+        return roles;
+    }
 
-        public User build(){ return u; }
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 }
