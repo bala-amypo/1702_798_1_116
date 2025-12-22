@@ -76,7 +76,7 @@
             </exclusions>
         </dependency>
 
-        <!-- ✅ REQUIRED: TestNG -->
+    
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
