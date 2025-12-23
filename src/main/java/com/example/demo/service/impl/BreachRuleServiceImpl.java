@@ -1,32 +1,18 @@
-package com.example.demo.service.impl;
-
-import com.example.demo.entity.BreachRule;
-import com.example.demo.repository.BreachRuleRepository;
-import com.example.demo.service.BreachRuleService;
-import org.springframework.stereotype.Service;
-
 @Service
 public class BreachRuleServiceImpl implements BreachRuleService {
 
-    private final BreachRuleRepository breachRuleRepository;
+    private final BreachRuleRepository repository;
 
-    public BreachRuleServiceImpl(BreachRuleRepository breachRuleRepository) {
-        this.breachRuleRepository = breachRuleRepository;
+    public BreachRuleServiceImpl(BreachRuleRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public BreachRule getActiveDefaultOrFirst() {
-        return breachRuleRepository
-                .findFirstByActiveTrueOrderByIdAsc()
-                .orElseThrow(() -> new RuntimeException("No active breach rule found"));
-    }
-
-    @Override
-    public void deactivateRule(Long id) {
-        BreachRule rule = breachRuleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Breach rule not found"));
-
-        rule.setActive(false);
-        breachRuleRepository.save(rule);
+        BreachRule rule = repository.findFirstByActiveTrueOrderByIsDefaultRuleDesc();
+        if (rule == null) {
+            throw new ResourceNotFoundException("No active breach rule");
+        }
+        return rule;
     }
 }
