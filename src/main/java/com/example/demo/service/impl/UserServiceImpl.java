@@ -1,19 +1,24 @@
 package com.example.demo.service.impl;
 
-// ... existing imports ...
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
     
     private final UserRepository userRepository;
-    // Remove PasswordEncoder dependency temporarily
-    // private final PasswordEncoder passwordEncoder;
     
     public UserServiceImpl(UserRepository userRepository) {
-        // Remove PasswordEncoder from constructor
         this.userRepository = userRepository;
-        // this.passwordEncoder = passwordEncoder;
     }
     
     @Override
@@ -24,8 +29,7 @@ public class UserServiceImpl implements UserService {
         
         User user = new User();
         user.setEmail(email);
-        // Use plain text temporarily (NOT for production)
-        user.setPassword(password);  // Instead of passwordEncoder.encode(password)
+        user.setPassword(password);  // Plain text for testing
         
         Set<String> roles = new HashSet<>();
         roles.add("ROLE_USER");
