@@ -3,12 +3,14 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.PenaltyCalculationService;
+import com.example.demo.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -68,7 +70,6 @@ public class PenaltyCalculationServiceImpl implements PenaltyCalculationService 
     private BigDecimal calculatePenaltyAmount(int daysDelayed, BigDecimal penaltyPerDay, 
                                               Double maxPercentage, BigDecimal contractValue) {
         BigDecimal dailyPenalty = penaltyPerDay.multiply(BigDecimal.valueOf(daysDelayed));
-        
         BigDecimal maxPenalty = contractValue.multiply(BigDecimal.valueOf(maxPercentage / 100));
         
         return dailyPenalty.min(maxPenalty);
