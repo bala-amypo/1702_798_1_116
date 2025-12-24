@@ -1,50 +1,38 @@
-package com.example.demo.model;
+// Entity: VendorTier.java
+package com.example.demo.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import javax.persistence.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "vendor_tiers", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "tierName")
-})
+@Table(name = "vendor_tiers",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"tierName"}))
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VendorTier {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @NotBlank(message = "Tier name is required")
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String tierName;
     
-    @NotNull(message = "Minimum score threshold is required")
-    @DecimalMin(value = "0.0", message = "Minimum score threshold cannot be negative")
-    private Double minScoreThreshold;
+    @NotNull(message = "Min threshold is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Min threshold must be greater than 0")
+    @Column(nullable = false)
+    private BigDecimal minThreshold;
     
-    private Boolean active = true;
+    @NotNull(message = "Max threshold is required")
+    @Column(nullable = false)
+    private BigDecimal maxThreshold;
     
-    // Constructors
-    public VendorTier() {}
-    
-    public VendorTier(String tierName, Double minScoreThreshold) {
-        this.tierName = tierName;
-        this.minScoreThreshold = minScoreThreshold;
-    }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getTierName() { return tierName; }
-    public void setTierName(String tierName) { this.tierName = tierName; }
-    
-    public Double getMinScoreThreshold() { return minScoreThreshold; }
-    public void setMinScoreThreshold(Double minScoreThreshold) { 
-        this.minScoreThreshold = minScoreThreshold; 
-    }
-    
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
+    @Column(nullable = false)
+    private Double discountPercentage;
 }
