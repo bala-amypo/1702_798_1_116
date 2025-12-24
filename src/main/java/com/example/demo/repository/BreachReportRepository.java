@@ -1,4 +1,3 @@
-// Repository: BreachReportRepository.java
 package com.example.demo.repository;
 
 import com.example.demo.entity.BreachReport;

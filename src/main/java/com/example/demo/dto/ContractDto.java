@@ -1,4 +1,3 @@
-// DTO: ContractDto.java
 package com.example.demo.dto;
 
 import lombok.Data;
@@ -12,4 +11,5 @@ public class ContractDto {
     private String counterpartyName;
     private LocalDate agreedDeliveryDate;
     private BigDecimal baseContractValue;
+    private String status;
 }
