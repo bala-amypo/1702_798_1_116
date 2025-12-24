@@ -1,62 +1,36 @@
-package com.example.demo.model;
+// Entity: DeliveryRecord.java
+package com.example.demo.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.util.Date;
-import java.sql.Timestamp;
+import lombok.*;
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "delivery_records")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DeliveryRecord {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message = "Contract is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
     
-    @NotNull(message = "Delivery date is required")
-    @PastOrPresent(message = "Delivery date cannot be in the future")
-    @Temporal(TemporalType.DATE)
-    private Date deliveryDate;
+    @Column(nullable = false)
+    private LocalDate deliveryDate;
     
-    @NotBlank(message = "Notes are required")
-    @Column(columnDefinition = "TEXT")
     private String notes;
     
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Timestamp createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
     
-    // Constructors
-    public DeliveryRecord() {}
-    
-    public DeliveryRecord(Contract contract, Date deliveryDate, String notes) {
-        this.contract = contract;
-        this.deliveryDate = deliveryDate;
-        this.notes = notes;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public Contract getContract() { return contract; }
-    public void setContract(Contract contract) { this.contract = contract; }
-    
-    public Date getDeliveryDate() { return deliveryDate; }
-    public void setDeliveryDate(Date deliveryDate) { this.deliveryDate = deliveryDate; }
-    
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
-    
-    public Timestamp getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 }
