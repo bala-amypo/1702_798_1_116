@@ -1,4 +1,3 @@
-// src/main/java/com/example/demo/entity/Contract.java
 package com.example.demo.entity;
 
 import lombok.*;
@@ -9,7 +8,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "contracts")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,28 +17,28 @@ public class Contract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(unique = true, nullable = false)
     private String contractNumber;
-    
+
     @Column(nullable = false)
     private String title;
-    
-    @Column(nullable = false)
+
+    @Column(name = "counterparty_name", nullable = false)
     private String counterpartyName;
-    
-    @Column(nullable = false)
+
+    @Column(name = "agreed_delivery_date", nullable = false)
     private LocalDate agreedDeliveryDate;
-    
-    @Column(nullable = false)
+
+    @Column(name = "base_contract_value", nullable = false)
     private BigDecimal baseContractValue;
-    
+
     @Column(nullable = false)
     private String status;
-    
-    @Column(updatable = false)
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

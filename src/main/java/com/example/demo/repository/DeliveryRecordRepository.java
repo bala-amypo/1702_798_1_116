@@ -1,4 +1,3 @@
-// Repository: DeliveryRecordRepository.java
 package com.example.demo.repository;
 
 import com.example.demo.entity.DeliveryRecord;
@@ -9,7 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface DeliveryRecordRepository extends JpaRepository<DeliveryRecord, Long> {
-    List<DeliveryRecord> findByContractId(Long contractId);
     List<DeliveryRecord> findByContractIdOrderByDeliveryDateAsc(Long contractId);
     Optional<DeliveryRecord> findFirstByContractIdOrderByDeliveryDateDesc(Long contractId);
 }
