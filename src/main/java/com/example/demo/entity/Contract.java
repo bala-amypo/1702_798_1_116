@@ -1,4 +1,4 @@
-// Entity: Contract.java
+// src/main/java/com/example/demo/entity/Contract.java
 package com.example.demo.entity;
 
 import lombok.*;
@@ -39,16 +39,11 @@ public class Contract {
     @Column(updatable = false)
     private LocalDateTime createdAt;
     
-    private LocalDateTime updatedAt;
-    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        status = "ACTIVE";
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        if (status == null) {
+            status = "ACTIVE";
+        }
     }
 }
