@@ -1,4 +1,3 @@
-// JwtTokenProvider.java
 package com.example.demo.security;
 
 import io.jsonwebtoken.*;
@@ -72,7 +71,8 @@ public class JwtTokenProvider {
     public Set<String> getRolesFromToken(String token) {
         Claims claims = getClaims(token);
         String rolesStr = (String) claims.get("roles");
-        return Arrays.stream(rolesStr.split(","))
-                .collect(Collectors.toSet());
+        return rolesStr != null ? 
+            Arrays.stream(rolesStr.split(",")).collect(Collectors.toSet()) : 
+            Collections.emptySet();
     }
 }
