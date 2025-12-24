@@ -2,9 +2,11 @@ package com.example.demo.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.security.Key;
@@ -14,12 +16,10 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
     
-    @Value("${app.jwt.secret:defaultSecretKey}")
-    @Getter @Setter
+    @Value("${jwt.secret}")
     private String jwtSecret;
     
-    @Value("${app.jwt.expiration-ms:86400000}")
-    @Getter @Setter
+    @Value("${jwt.expiration}")
     private long jwtExpirationMs;
     
     private Key key;
@@ -33,13 +33,13 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
         
-        String rolesStr = String.join(",", roles);
+        String rolesString = String.join(",", roles);
         
         return Jwts.builder()
                 .setSubject(email)
                 .claim("userId", userId)
                 .claim("email", email)
-                .claim("roles", rolesStr)
+                .claim("roles", rolesString)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -54,25 +54,31 @@ public class JwtTokenProvider {
                 .getBody();
     }
     
-    public boolean validateToken(String authToken) {
+    public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
     
-    public String getEmailFromToken(String token) {
+    public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
-        return claims.getSubject();
+        String email = claims.getSubject();
+        String rolesString = (String) claims.get("roles");
+        List<GrantedAuthority> authorities = Arrays.stream(rolesString.split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+        
+        return new UsernamePasswordAuthenticationToken(email, null, authorities);
     }
     
-    public Set<String> getRolesFromToken(String token) {
-        Claims claims = getClaims(token);
-        String rolesStr = (String) claims.get("roles");
-        return rolesStr != null ? 
-            Arrays.stream(rolesStr.split(",")).collect(Collectors.toSet()) : 
-            Collections.emptySet();
+    public String getEmailFromToken(String token) {
+        return getClaims(token).getSubject();
+    }
+    
+    public Long getUserIdFromToken(String token) {
+        return Long.valueOf(getClaims(token).get("userId").toString());
     }
 }
