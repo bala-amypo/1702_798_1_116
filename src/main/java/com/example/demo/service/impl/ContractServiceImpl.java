@@ -5,10 +5,12 @@ import com.example.demo.entity.DeliveryRecord;
 import com.example.demo.repository.ContractRepository;
 import com.example.demo.repository.DeliveryRecordRepository;
 import com.example.demo.service.ContractService;
+import com.example.demo.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -65,12 +67,10 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = getContractById(contractId);
         LocalDate today = LocalDate.now();
         
-        // Check if delivery has occurred
-        java.util.Optional<DeliveryRecord> latestRecord = 
+        Optional<DeliveryRecord> latestRecord = 
             deliveryRecordRepository.findFirstByContractIdOrderByDeliveryDateDesc(contractId);
         
         if (latestRecord.isPresent()) {
-            // Delivery occurred, check if late
             LocalDate deliveryDate = latestRecord.get().getDeliveryDate();
             if (deliveryDate.isAfter(contract.getAgreedDeliveryDate())) {
                 contract.setStatus("BREACHED");
@@ -78,7 +78,6 @@ public class ContractServiceImpl implements ContractService {
                 contract.setStatus("FULFILLED");
             }
         } else {
-            // No delivery yet, check if past due
             if (today.isAfter(contract.getAgreedDeliveryDate())) {
                 contract.setStatus("BREACHED");
             } else {
