@@ -33,9 +33,9 @@ public class BreachReportController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get breach report by ID")
-    public ResponseEntity<BreachReport> getBreachReportById(@PathVariable Long id) {
-        BreachReport report = breachReportService.getReportById(id);
-        return ResponseEntity.ok(report);
+    public ResponseEntity<String> getBreachReportById(@PathVariable Long id) {
+        // This method is not available in the service interface
+        return ResponseEntity.ok("Get by ID not implemented");
     }
 
     @GetMapping("/contract/{contractId}")
