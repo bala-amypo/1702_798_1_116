@@ -1,51 +1,54 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.dto.DeliveryRecordDto;
-// import com.example.demo.service.DeliveryRecordService;
-// import io.swagger.v3.oas.annotations.Operation;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.entity.DeliveryRecord;
+import com.example.demo.service.DeliveryRecordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-// import java.util.List;
+import java.util.List;
 
-// @RestController
-// @RequestMapping("/api/delivery-records")
-// @Tag(name = "Delivery Record Management", description = "Delivery record CRUD operations")
-// public class DeliveryRecordController {
+@RestController
+@RequestMapping("/api/delivery-records")
+@Tag(name = "Delivery Record Management", description = "Delivery record operations")
+@SecurityRequirement(name = "bearerAuth")
+public class DeliveryRecordController {
 
-//     @Autowired
-//     private DeliveryRecordService deliveryRecordService;
+    private final DeliveryRecordService deliveryRecordService;
 
-//     @GetMapping
-//     @Operation(summary = "Get all delivery records")
-//     public ResponseEntity<List<DeliveryRecordDto>> getAllDeliveryRecords() {
-//         return ResponseEntity.ok(deliveryRecordService.getAllDeliveryRecords());
-//     }
+    @Autowired
+    public DeliveryRecordController(DeliveryRecordService deliveryRecordService) {
+        this.deliveryRecordService = deliveryRecordService;
+    }
 
-//     @GetMapping("/{id}")
-//     @Operation(summary = "Get delivery record by ID")
-//     public ResponseEntity<DeliveryRecordDto> getDeliveryRecordById(@PathVariable Long id) {
-//         return ResponseEntity.ok(deliveryRecordService.getDeliveryRecordById(id));
-//     }
+    @PostMapping
+    @Operation(summary = "Log delivery")
+    public ResponseEntity<DeliveryRecord> createDeliveryRecord(@RequestBody DeliveryRecord deliveryRecord) {
+        DeliveryRecord created = deliveryRecordService.createDeliveryRecord(deliveryRecord);
+        return ResponseEntity.ok(created);
+    }
 
-//     @PostMapping
-//     @Operation(summary = "Create new delivery record")
-//     public ResponseEntity<DeliveryRecordDto> createDeliveryRecord(@RequestBody DeliveryRecordDto deliveryRecordDto) {
-//         return ResponseEntity.ok(deliveryRecordService.createDeliveryRecord(deliveryRecordDto));
-//     }
+    @GetMapping("/{id}")
+    @Operation(summary = "Get delivery record by ID")
+    public ResponseEntity<DeliveryRecord> getDeliveryRecordById(@PathVariable Long id) {
+        DeliveryRecord record = deliveryRecordService.getRecordById(id);
+        return ResponseEntity.ok(record);
+    }
 
-//     @PutMapping("/{id}")
-//     @Operation(summary = "Update delivery record")
-//     public ResponseEntity<DeliveryRecordDto> updateDeliveryRecord(@PathVariable Long id, @RequestBody DeliveryRecordDto deliveryRecordDto) {
-//         return ResponseEntity.ok(deliveryRecordService.updateDeliveryRecord(id, deliveryRecordDto));
-//     }
+    @GetMapping("/contract/{contractId}")
+    @Operation(summary = "Get delivery records for contract")
+    public ResponseEntity<List<DeliveryRecord>> getDeliveryRecordsForContract(@PathVariable Long contractId) {
+        List<DeliveryRecord> records = deliveryRecordService.getDeliveryRecordsForContract(contractId);
+        return ResponseEntity.ok(records);
+    }
 
-//     @DeleteMapping("/{id}")
-//     @Operation(summary = "Delete delivery record")
-//     public ResponseEntity<Void> deleteDeliveryRecord(@PathVariable Long id) {
-//         deliveryRecordService.deleteDeliveryRecord(id);
-//         return ResponseEntity.noContent().build();
-//     }
-// }
+    @GetMapping("/contract/{contractId}/latest")
+    @Operation(summary = "Get latest delivery record for contract")
+    public ResponseEntity<DeliveryRecord> getLatestDeliveryRecord(@PathVariable Long contractId) {
+        DeliveryRecord record = deliveryRecordService.getLatestDeliveryRecord(contractId);
+        return ResponseEntity.ok(record);
+    }
+}

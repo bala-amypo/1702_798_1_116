@@ -1,46 +1,68 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.dto.AuthRequest;
-// import com.example.demo.security.JwtTokenProvider;
-// import io.swagger.v3.oas.annotations.Operation;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.dto.AuthRequest;
+import com.example.demo.entity.User;
+import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
-// import java.util.HashMap;
-// import java.util.Map;
-// import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-// @RestController
-// @RequestMapping("/api/auth")
-// @Tag(name = "Authentication", description = "User authentication operations")
-// public class AuthController {
+@RestController
+@RequestMapping("/auth")
+@Tag(name = "Authentication", description = "User authentication operations")
+public class AuthController {
 
-//     @Autowired
-//     private JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
 
-//     @PostMapping("/login")
-//     @Operation(summary = "User login", description = "Authenticate user and return JWT token")
-//     public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest authRequest) {
-//         // Mock authentication - replace with actual authentication logic
-//         String token = jwtTokenProvider.generateToken(1L, authRequest.getEmail(), Set.of("USER"));
+    @Autowired
+    public AuthController(AuthenticationManager authenticationManager, 
+                         JwtTokenProvider jwtTokenProvider,
+                         UserService userService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
+    }
+
+    @PostMapping("/register")
+    @Operation(summary = "Register new user")
+    public ResponseEntity<Map<String, String>> register(@RequestBody AuthRequest authRequest) {
+        User user = userService.registerUser(authRequest.getEmail(), authRequest.getPassword());
         
-//         Map<String, String> response = new HashMap<>();
-//         response.put("token", token);
-//         response.put("type", "Bearer");
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRoles());
         
-//         return ResponseEntity.ok(response);
-//     }
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("type", "Bearer");
+        response.put("message", "User registered successfully");
+        
+        return ResponseEntity.ok(response);
+    }
 
-//     @PostMapping("/validate")
-//     @Operation(summary = "Validate token", description = "Validate JWT token")
-//     public ResponseEntity<Map<String, Boolean>> validateToken(@RequestParam String token) {
-//         boolean isValid = jwtTokenProvider.validateToken(token);
+    @PostMapping("/login")
+    @Operation(summary = "User login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest authRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+        );
         
-//         Map<String, Boolean> response = new HashMap<>();
-//         response.put("valid", isValid);
+        User user = userService.getUserByEmail(authRequest.getEmail());
+        String token = jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRoles());
         
-//         return ResponseEntity.ok(response);
-//     }
-// }
+        Map<String, String> response = new HashMap<>();
+        response.put("token", token);
+        response.put("type", "Bearer");
+        
+        return ResponseEntity.ok(response);
+    }
+}

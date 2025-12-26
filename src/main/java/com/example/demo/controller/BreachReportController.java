@@ -1,51 +1,54 @@
-// package com.example.demo.controller;
+package com.example.demo.controller;
 
-// import com.example.demo.entity.BreachReport;
-// import com.example.demo.service.BreachReportService;
-// import io.swagger.v3.oas.annotations.Operation;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import com.example.demo.entity.BreachReport;
+import com.example.demo.service.BreachReportService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-// import java.util.List;
+import java.util.List;
 
-// @RestController
-// @RequestMapping("/api/breach-reports")
-// @Tag(name = "Breach Report Management", description = "Breach report CRUD operations")
-// public class BreachReportController {
+@RestController
+@RequestMapping("/api/reports")
+@Tag(name = "Breach Report Management", description = "Breach report operations")
+@SecurityRequirement(name = "bearerAuth")
+public class BreachReportController {
 
-//     @Autowired
-//     private BreachReportService breachReportService;
+    private final BreachReportService breachReportService;
 
-//     @GetMapping
-//     @Operation(summary = "Get all breach reports")
-//     public ResponseEntity<List<BreachReport>> getAllBreachReports() {
-//         return ResponseEntity.ok(breachReportService.getAllBreachReports());
-//     }
+    @Autowired
+    public BreachReportController(BreachReportService breachReportService) {
+        this.breachReportService = breachReportService;
+    }
 
-//     @GetMapping("/{id}")
-//     @Operation(summary = "Get breach report by ID")
-//     public ResponseEntity<BreachReport> getBreachReportById(@PathVariable Long id) {
-//         return ResponseEntity.ok(breachReportService.getBreachReportById(id));
-//     }
+    @PostMapping("/generate/{contractId}")
+    @Operation(summary = "Generate breach report for contract")
+    public ResponseEntity<BreachReport> generateBreachReport(@PathVariable Long contractId) {
+        BreachReport report = breachReportService.generateReport(contractId);
+        return ResponseEntity.ok(report);
+    }
 
-//     @PostMapping
-//     @Operation(summary = "Create new breach report")
-//     public ResponseEntity<BreachReport> createBreachReport(@RequestBody BreachReport breachReport) {
-//         return ResponseEntity.ok(breachReportService.createBreachReport(breachReport));
-//     }
+    @GetMapping("/{id}")
+    @Operation(summary = "Get breach report by ID")
+    public ResponseEntity<BreachReport> getBreachReportById(@PathVariable Long id) {
+        BreachReport report = breachReportService.getReportById(id);
+        return ResponseEntity.ok(report);
+    }
 
-//     @PutMapping("/{id}")
-//     @Operation(summary = "Update breach report")
-//     public ResponseEntity<BreachReport> updateBreachReport(@PathVariable Long id, @RequestBody BreachReport breachReport) {
-//         return ResponseEntity.ok(breachReportService.updateBreachReport(id, breachReport));
-//     }
+    @GetMapping("/contract/{contractId}")
+    @Operation(summary = "Get breach reports for contract")
+    public ResponseEntity<List<BreachReport>> getBreachReportsForContract(@PathVariable Long contractId) {
+        List<BreachReport> reports = breachReportService.getReportsForContract(contractId);
+        return ResponseEntity.ok(reports);
+    }
 
-//     @DeleteMapping("/{id}")
-//     @Operation(summary = "Delete breach report")
-//     public ResponseEntity<Void> deleteBreachReport(@PathVariable Long id) {
-//         breachReportService.deleteBreachReport(id);
-//         return ResponseEntity.noContent().build();
-//     }
-// }
+    @GetMapping
+    @Operation(summary = "Get all breach reports")
+    public ResponseEntity<List<BreachReport>> getAllBreachReports() {
+        List<BreachReport> reports = breachReportService.getAllReports();
+        return ResponseEntity.ok(reports);
+    }
+}
