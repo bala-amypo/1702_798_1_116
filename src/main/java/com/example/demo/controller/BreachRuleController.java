@@ -2,59 +2,40 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.BreachRule;
 import com.example.demo.service.BreachRuleService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/breach-rules")
-@Tag(name = "Breach Rule Management", description = "Breach rule operations")
-@SecurityRequirement(name = "bearerAuth")
 public class BreachRuleController {
-
-    private final BreachRuleService breachRuleService;
-
+    
     @Autowired
-    public BreachRuleController(BreachRuleService breachRuleService) {
-        this.breachRuleService = breachRuleService;
-    }
-
+    private BreachRuleService breachRuleService;
+    
     @PostMapping
-    @Operation(summary = "Create breach rule")
-    public ResponseEntity<BreachRule> createBreachRule(@RequestBody BreachRule breachRule) {
-        BreachRule created = breachRuleService.createRule(breachRule);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<BreachRule> createRule(@RequestBody BreachRule rule) {
+        return ResponseEntity.ok(breachRuleService.createRule(rule));
     }
-
+    
     @PutMapping("/{id}")
-    @Operation(summary = "Update breach rule")
-    public ResponseEntity<String> updateBreachRule(@PathVariable Long id, @RequestBody BreachRule breachRule) {
-        // This method is not available in the service interface
-        return ResponseEntity.ok("Update not implemented");
+    public ResponseEntity<BreachRule> updateRule(@PathVariable Long id, @RequestBody BreachRule rule) {
+        return ResponseEntity.ok(breachRuleService.updateRule(id, rule));
     }
-
+    
     @GetMapping("/{id}")
-    @Operation(summary = "Get breach rule by ID")
-    public ResponseEntity<String> getBreachRuleById(@PathVariable Long id) {
-        // This method is not available in the service interface
-        return ResponseEntity.ok("Get by ID not implemented");
+    public ResponseEntity<BreachRule> getRule(@PathVariable Long id) {
+        return ResponseEntity.ok(breachRuleService.getRuleById(id));
     }
-
+    
     @GetMapping
-    @Operation(summary = "Get all breach rules")
-    public ResponseEntity<List<BreachRule>> getAllBreachRules() {
-        List<BreachRule> rules = breachRuleService.getAllRules();
-        return ResponseEntity.ok(rules);
+    public ResponseEntity<List<BreachRule>> getAllRules() {
+        return ResponseEntity.ok(breachRuleService.getAllRules());
     }
-
+    
     @PutMapping("/{id}/deactivate")
-    @Operation(summary = "Deactivate breach rule")
-    public ResponseEntity<Void> deactivateBreachRule(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateRule(@PathVariable Long id) {
         breachRuleService.deactivateRule(id);
         return ResponseEntity.ok().build();
     }
